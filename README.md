@@ -1,3 +1,4 @@
+![App Preview](screen_short.png)
 # 🗣️ Whisper API Transcription Tool
 
 A GUI + API application to transcribe audio files using OpenAI's Whisper models. This project includes:
@@ -78,4 +79,4 @@ BuildExe/
 
 
 
-![App Preview](screen_short.png)
+
