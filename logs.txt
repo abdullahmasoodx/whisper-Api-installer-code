@@ -1,0 +1,31 @@
+[2025-07-11 14:54:54] Using device: cuda
+[2025-07-11 14:54:57] VAD: False
+[2025-07-11 14:55:00] VAD: False
+[2025-07-11 14:55:02] VAD: False
+[2025-07-11 14:55:26] Using device: cuda
+[2025-07-11 14:55:37] VAD: False
+[2025-07-11 14:56:15] Using device: cuda
+[2025-07-11 14:56:24] VAD: False
+[2025-07-11 14:56:36] Whisper Transcribe time: 11.451767921447754
+[2025-07-11 14:56:36] Total Response time: 17.75169587135315
+[2025-07-11 15:08:15] VAD: False
+[2025-07-11 15:08:17] Whisper Transcribe time: 3.0168302059173584
+[2025-07-11 15:08:17] Total Response time: 3.0565059185028076
+[2025-07-11 15:08:24] VAD: False
+[2025-07-11 15:08:26] Whisper Transcribe time: 1.8360459804534912
+[2025-07-11 15:08:26] Total Response time: 1.8551545143127441
+[2025-07-11 15:09:36] VAD: False
+[2025-07-11 15:09:38] Whisper Transcribe time: 1.8717107772827148
+[2025-07-11 15:09:38] Total Response time: 1.8927092552185059
+[2025-07-11 15:13:21] VAD: False
+[2025-07-11 15:13:23] Whisper Transcribe time: 2.6421964168548584
+[2025-07-11 15:13:23] Total Response time: 2.6681594848632812
+[2025-07-11 15:13:45] VAD: False
+[2025-07-11 15:13:48] Whisper Transcribe time: 2.6548359394073486
+[2025-07-11 15:13:48] Total Response time: 2.6813161373138428
+[2025-07-11 15:13:56] VAD: False
+[2025-07-11 15:13:59] Whisper Transcribe time: 2.624068021774292
+[2025-07-11 15:13:59] Total Response time: 2.642146348953247
+[2025-07-11 15:15:00] VAD: False
+[2025-07-11 15:15:03] Whisper Transcribe time: 2.9932260513305664
+[2025-07-11 15:15:03] Total Response time: 3.023562431335449

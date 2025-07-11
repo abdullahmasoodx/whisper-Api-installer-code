@@ -1,0 +1,8 @@
+/build
+/dist
+/ffmpeg
+/models
+/env
+/BuildExe
+/model_cache
+/temo
