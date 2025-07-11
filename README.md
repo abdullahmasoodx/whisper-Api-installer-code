@@ -48,33 +48,34 @@ BuildExe/
 │   └── model_cache/            # Whisper models
 
 
-4️⃣ Create Installer with Inno Setup
-Download & install Inno Setup: https://jrsoftware.org/isinfo.php
+#4️⃣ Create Installer with Inno Setup
+#Download & install Inno Setup: https://jrsoftware.org/isinfo.php
 
-Open the whisper.iss file in the Inno Setup Editor.
+#Open the whisper.iss file in the Inno Setup Editor.
 
-Confirm paths to:
+#Confirm paths to:
 
-WhisperApi.exe
+#WhisperApi.exe
 
-models/app/app.exe
+#models/app/app.exe
 
-models/model_cache/
+#models/model_cache/
 
-Click Compile.
+#Click Compile.
 
-You will get a standalone installer .exe that installs everything into the proper structure on the user's machine.
+#You will get a standalone installer .exe that installs everything into the proper structure on the user's machine.
 
 ✅ Installer Output
-When the installer is run, it will:
+#When the installer is run, it will:
 
-Install the GUI as WhisperApi.exe
+#Install the GUI as WhisperApi.exe
 
-Install the backend API (app.exe) into models/app/
+#Install the backend API (app.exe) into models/app/
 
-Install preloaded Whisper models inside models/model_cache/
+#Install preloaded Whisper models inside models/model_cache/
 
-Optionally run a post_install.bat for setup tasks
+#Optionally run a post_install.bat for setup tasks
+
 
 
 ![App Preview](screen_short.png)
