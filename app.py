@@ -15,13 +15,18 @@ import datetime
 
 LOG_FILE = "logs.txt"
 # Define base path whether running as script or bundled .exe
-if getattr(sys, 'frozen', False):
-    base_path = sys._MEIPASS
-else:
-    base_path = os.path.dirname(__file__)
+# if getattr(sys, 'frozen', False):
+#     base_path = sys._MEIPASS
+# else:
+#     base_path = os.path.dirname(__file__)
+
+
+base_path = os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__)
+model_cache_dir = os.path.join(os.environ["PROGRAMDATA"], "WhisperApi", "model_cache")
+
 
 # Set the cache path for Whisper
-os.environ["XDG_CACHE_HOME"] = os.path.join(base_path, "model_cache")
+#os.environ["XDG_CACHE_HOME"] = os.path.join(base_path, "model_cache")
  # Change to temp unpacked dir
 
 # Set ffmpeg path explicitly if bundled
@@ -30,8 +35,8 @@ AudioSegment.converter = ffmpeg_path
 
 def log_message(message):
     timestamp = datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(f"{timestamp} {message}\n")
+    # with open(LOG_FILE, "a", encoding="utf-8") as f:
+    #     f.write(f"{timestamp} {message}\n")
 
 
 APP_VERSION = "1.5.0"
@@ -114,9 +119,14 @@ def wrap_text_by_char_proportion(text: str, start: float, end: float, max_chars:
         cumulative_time += duration
 
     return result
+
 def get_model(model_name):
     if model_name not in model_cache:
-        model_cache[model_name] = whisper.load_model(model_name, device=device)
+        model_cache[model_name] = whisper.load_model(
+            model_name,
+            device=device,
+            download_root=model_cache_dir
+        )
     return model_cache[model_name]
 
 app = Flask(__name__)

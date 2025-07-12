@@ -35,7 +35,7 @@ pyinstaller app.py ^
   --hidden-import=whisper ^
   --hidden-import=torch ^
   --hidden-import=torchaudio
-
+pyinstaller app.py  --paths=env/Lib/site-packages --hidden-import=whisper --hidden-import=torch --hidden-import=torchaudio
 
 
 pyinstaller --noconfirm --windowed --onefile GUI.py --name=WhisperApi
@@ -80,3 +80,4 @@ BuildExe/
 
 
 
+## 
