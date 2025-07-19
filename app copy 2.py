@@ -7,11 +7,21 @@ import os
 import tempfile
 import time
 import whisper.version
+from typing import List, Dict
+import warnings
+import os
 import sys
 import datetime
+import json
+from flask import Response
 
+LOG_FILE = "logs.txt"
+# Define base path whether running as script or bundled .exe
+# if getattr(sys, 'frozen', False):
+#     base_path = sys._MEIPASS
+# else:
+#     base_path = os.path.dirname(__file__)
 
-APP_VERSION = "1.4.16"
 
 base_path = os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__)
 model_cache_dir = os.path.join(os.environ["PROGRAMDATA"], "WhisperApi", "model_cache")
@@ -20,27 +30,15 @@ print("Loading Whisper model from:", os.environ.get("XDG_CACHE_HOME", "Default s
 os.environ["XDG_CACHE_HOME"] = model_cache_dir
 print("Loading Whisper model from:", os.environ.get("XDG_CACHE_HOME", "Default system cache"))
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print("Using device:", device)
 
-available_models = {
-    "tiny": "tiny",
-    "tiny.en": "tiny.en",
-    "base": "base",
-    "base.en": "base.en",
-    "small": "small",
-    "small.en": "small.en",
-    "medium": "medium",
-    "medium.en": "medium.en",
-    "large": "large",
-    "large-v1": "large-v1",
-    "large-v2": "large-v2",
-    "large-v3": "large-v3",
-    "large-v3-turbo": "large-v3-turbo"
-}
 
-model_cache = {}
-last_used_model = "large-v3-turbo"
+# Set the cache path for Whisper
+#os.environ["XDG_CACHE_HOME"] = os.path.join(base_path, "model_cache")
+ # Change to temp unpacked dirs
+
+# Set ffmpeg path explicitly if bundled
+ffmpeg_path = os.path.join(base_path, "ffmpeg.exe")
+AudioSegment.converter = ffmpeg_path
 
 def log_message(message):
     timestamp = datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
@@ -48,23 +46,86 @@ def log_message(message):
     #     f.write(f"{timestamp} {message}\n")
 
 
+APP_VERSION = "1.5.0"
+device = "cuda" if torch.cuda.is_available() else "cpu"
+log_message(f"Using device: {device}")
+warnings.filterwarnings("ignore")
 
-def split_text_by_length(text, max_length=32):
+# available_models = {
+#     "tiny": "tiny",
+#     "tiny.en": "tiny.en",
+#     "base": "base",
+#     "base.en": "base.en",
+#     "small": "small",
+#     "small.en": "small.en",
+#     "medium": "medium",
+#     "medium.en": "medium.en",
+#     "large": "large",
+#     "large-v1": "large-v1",
+#     "large-v2": "large-v2",
+#     "large-v3": "large-v3",
+#     "large-v3-turbo": "large-v3-turbo"
+# }
+
+model_cache = {}
+
+last_used_model = "large-v3-turbo"
+
+def split_text_to_lines(text: str, max_chars: int = 32) -> List[str]:
+    """
+    Splits the input text into lines, breaking at the last space before max_chars.
+    """
+    import textwrap
     words = text.strip().split()
     lines = []
     current_line = ""
 
     for word in words:
-        if len(current_line) + len(word) + (1 if current_line else 0) <= max_length:
-            current_line += (" " + word) if current_line else word
+        if len(current_line) + len(word) + 1 <= max_chars:
+            current_line += (" " if current_line else "") + word
         else:
             lines.append(current_line)
             current_line = word
-
     if current_line:
         lines.append(current_line)
+    return lines
 
-    return '\n'.join(lines)
+
+def wrap_text_by_char_proportion(text: str, start: float, end: float, max_chars: int = 32) -> List[Dict]:
+    """
+    Wraps text into blocks, each with up to 2 lines of ≤ max_chars/2, and assigns proportional timings.
+    """
+    max_chars = max_chars * 2
+    full_duration = end - start
+    max_line_length = max_chars // 2
+    lines = split_text_to_lines(text, max_chars=max_line_length)
+
+    # Group into 2-line blocks
+    line_blocks = []
+    i = 0
+    while i < len(lines):
+        block = lines[i]
+        if i + 1 < len(lines):
+            block += "\n" + lines[i + 1]
+        line_blocks.append(block)
+        i += 2
+
+    total_chars = sum(len(block.replace("\n", "").replace(" ", "")) for block in line_blocks)
+
+    result = []
+    cumulative_time = start
+
+    for block in line_blocks:
+        char_count = len(block.replace("\n", "").replace(" ", ""))
+        duration = (char_count / total_chars) * full_duration if total_chars > 0 else 0
+        result.append({
+            "text": block,
+            "start": cumulative_time,
+            "end": cumulative_time + duration
+        })
+        cumulative_time += duration
+
+    return result
 
 def get_model(model_name):
     
@@ -101,15 +162,47 @@ def get_versions():
         "device": device
     })
 
+@app.route("/health", methods=["GET"])
+def health():
+    return "OK", 200
+
 @app.route("/model", methods=["GET"])
 def get_model_name():
     return jsonify({"model": last_used_model, "device": device})
 
+@app.route('/set_model', methods=['POST'])
+def set_model():
+    global last_used_model
+    data = request.get_json()
+    new_model = data.get("model")
+    if new_model:
+        last_used_model = new_model
+        log_message(f"🚀 Model updated to: {new_model}")
+        return jsonify({"status": "success", "model": new_model})
+    return jsonify({"status": "error", "message": "Model not provided"}), 400
+
+
+
+@app.route('/model_version')
+def test_api():
+    ip = request.remote_addr or "unknown"
+    user_agent = request.headers.get('User-Agent', 'unknown')
+    log_message(f"✅ /testapi was hit by {ip} | UA: {user_agent}")
+    #log_message(f"✅ /testapi was hit by {ip} | UA: ")
+    return jsonify({"message": "Test API hit!", "model": last_used_model})
+
+
+
+
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
+
+    print("Loading Whisper model from:", os.environ.get("XDG_CACHE_HOME", "Default system cache"))
     start = time.time()
+
     if "audio" not in request.files:
         return jsonify({"error": "No audio file part in the request"}), 400
+    
     file = request.files["audio"]
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
@@ -160,7 +253,8 @@ def transcribe():
 
     is_vad_silence = parameters["enable_vad"] and not is_voice_present(
         temp_file_path, parameters["vad_aggressiveness"], parameters["vad_voice_ratio_threshold"])
-    print("VAD:", is_vad_silence)
+    log_message(f"VAD: {is_vad_silence}")
+
     result = model.transcribe(temp_file_path, temperature=parameters["temperature"])
 
     for seg in result.get("segments", []):
@@ -177,48 +271,49 @@ def transcribe():
             if len(seg.get("text", "").strip()) < parameters["min_text_length"]:
                 reason |= MIN_TEXT_FILTER
 
-        wrapped_text = split_text_by_length(seg.get("text", ""), max_length=parameters["wrap_length"])
 
-        seg["antix"] = {
+        text = seg.get("text", "").strip()
+        segment_start = seg.get("start", 0.0)
+        segment_end = seg.get("end", 0.0)
+
+        wrapped_text = wrap_text_by_char_proportion(
+            text=text,
+            start=segment_start,
+            end=segment_end,
+            max_chars=parameters["wrap_length"]
+        )
+
+        antix = {
             "filtered": reason,
             "filtered_bin": f'0b{reason:05b}',
             "wrapped_text": wrapped_text
         }
 
+        seg["antix"] = antix
+
     end = time.time()
 
-    print("Whisper Transcribe time:", end - t0)
-    print("Total Response time:", end - start)
+    log_message(f"Whisper Transcribe time: { end - t0}")
+    log_message(f"Total Response time: {end - start}" )
 
-    return jsonify({
-        "antix": {
-            "request_id": transcription_id,
-            "api_ver": APP_VERSION,
-            "whisper_ver": whisper.version.__version__,
-            "model": model_name,
-            "device": device,
-            "response_time": round(end - start, 3),
-            "enable_filtering": parameters.get("enable_filtering", False)
-        },
-        "result": result
-    })
+    return Response(
+        json.dumps({
+            "antix": {
+                "request_id": transcription_id,
+                "api_ver": APP_VERSION,
+                "whisper_ver": whisper.version.__version__,
+                "model": model_name,
+                "device": device,
+                "response_time": round(end - start, 3),
+                "enable_filtering": parameters.get("enable_filtering", False)
+            },
+            "result": result
+        }, indent=2),
+        mimetype='application/json'
+    )
 
 
-def warm_up(model):
-    import numpy as np
-    from scipy.io.wavfile import write
-    dummy_path = os.path.join(tempfile.gettempdir(), "dummy.wav")
-    sample_rate = 16000
-    samples = np.zeros(sample_rate, dtype=np.int16)
-    write(dummy_path, sample_rate, samples)
-    model.transcribe(dummy_path)
-    os.remove(dummy_path)
 
 if __name__ == "__main__":
-    print("Preloading Whisper model...")
-    model_cache["large-v3-turbo"] = whisper.load_model("large-v3-turbo", device=device,download_root=model_cache_dir)
-    warm_up(model_cache["large-v3-turbo"])
-    print("Model is Ready to Use")
-
     from waitress import serve
     serve(app, host="0.0.0.0", port=8001)

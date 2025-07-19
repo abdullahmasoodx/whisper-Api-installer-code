@@ -128,7 +128,8 @@ class LogViewerApp:
             except Exception as e:
                # self.log_gui(f"❌ Failed to copy FFmpeg: {e}\n")
                 return
-        
+            
+            
 
         # Step 2: Add FFmpeg bin to user PATH if not already
         try:
