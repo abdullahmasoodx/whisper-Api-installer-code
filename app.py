@@ -67,12 +67,13 @@ def split_text_by_length(text, max_length=32):
     return '\n'.join(lines)
 
 def get_model(model_name):
-    
-    model_cache[model_name] = whisper.load_model(
+    if model_name not in model_cache:
+        model_cache[model_name] = whisper.load_model(
             model_name,
             device=device,
             download_root=model_cache_dir
         )
+    return model_cache[model_name]
     # if model_name not in model_cache:
         
     return model_cache[model_name]
@@ -160,7 +161,7 @@ def transcribe():
 
     is_vad_silence = parameters["enable_vad"] and not is_voice_present(
         temp_file_path, parameters["vad_aggressiveness"], parameters["vad_voice_ratio_threshold"])
-    print("VAD:", is_vad_silence)
+
     result = model.transcribe(temp_file_path, temperature=parameters["temperature"])
 
     for seg in result.get("segments", []):
