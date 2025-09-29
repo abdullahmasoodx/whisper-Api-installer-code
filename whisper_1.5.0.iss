@@ -1,9 +1,9 @@
 ; -- Antix Digital AI Captions Subtitles Service Installer Script  --    
-;1.4.16 whisper  version
+;1.5.0 whisper  version
 
 [Setup]
 AppName=Antix Digital AI Captions Subtitles Service
-AppVersion=1.0.2
+AppVersion=2.0.2
 SetupIconFile=AntixDigital.ico
 AppVerName=Antix Digital AI Captions Subtitles Service
 AppPublisher= Antix Digital Inc

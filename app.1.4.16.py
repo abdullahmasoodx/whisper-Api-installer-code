@@ -17,7 +17,14 @@ model_lock = threading.Lock()
 
 base_path = os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__)
 
-model_cache_dir = os.path.join(os.environ["PROGRAMDATA"], "Antix Digital", "model_cache")
+#model_cache_dir = os.path.join(os.environ["PROGRAMDATA"], "Antix Digital", "model_cache")
+model_cache_dir = os.path.join(
+    os.environ["PROGRAMDATA"],
+    "Antix Digital",
+    "AICS Service",
+    "model_cache"
+)
+
 print("Loading Whisper model from:", os.environ.get("XDG_CACHE_HOME", "Default system cache"))
 
 os.environ["XDG_CACHE_HOME"] = model_cache_dir
