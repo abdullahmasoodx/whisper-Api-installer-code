@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Antix Digital AI Captions Subtitles Service
-AppVersion=2.0.2
+AppVersion=2.0.3
 SetupIconFile=AntixDigital.ico
 AppVerName=Antix Digital AI Captions Subtitles Service
 AppPublisher= Antix Digital Inc
@@ -36,6 +36,7 @@ Source: "AntixDigitalAICSService.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ffmpeg\*"; DestDir: "C:\ffmpeg"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "nssm.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "set_ffmpeg_env.bat"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "python-3.11.9-amd64.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "model_cache\*"; \
     DestDir: "{commonappdata}\Antix Digital\AICS Service\model_cache"; \
@@ -60,7 +61,8 @@ Filename: "sc.exe"; Parameters: "config ""Antix Digital AI Captions Subtitles Se
 
 ; ✅ Set the Description (same as the name for consistency)
 Filename: "sc.exe"; Parameters: "description ""Antix Digital AI Captions Subtitles Service"" ""Antix Digital AI Captions Subtitles Service"""; Flags: runhidden
-
+; run as admin, silent
+Filename: "{app}\set_ffmpeg_env.bat"; Flags: runhidden
 ; ✅ Start the service
 
 [UninstallRun] 

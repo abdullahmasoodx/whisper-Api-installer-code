@@ -36,6 +36,7 @@ Source: "AntixDigitalAICSService.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ffmpeg\*"; DestDir: "C:\ffmpeg"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "nssm.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "set_ffmpeg_env.bat"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "python-3.11.9-amd64.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "model_cache\*"; \
     DestDir: "{commonappdata}\Antix Digital\AICS Service\model_cache"; \
