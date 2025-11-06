@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Antix Digital AI Captions Subtitles Service
-AppVersion=1.0.2
+AppVersion=1.0.3
 SetupIconFile=AntixDigital.ico
 AppVerName=Antix Digital AI Captions Subtitles Service
 AppPublisher= Antix Digital Inc
@@ -47,6 +47,9 @@ Source: "model_cache\*"; \
 ;Name: "{commondesktop}\Antix Digital AI Captions Subtitles Service"; Filename: "{app}\AntixDigitalAICSService.exe"
 
 [Run]
+
+; run as admin, silent
+Filename: "{app}\set_ffmpeg_env.bat"; Flags: runhidden
 ; existing lines ...
 Filename: "{app}\nssm.exe"; Parameters: "install ""Antix Digital AI Captions Subtitles Service"" ""{app}\AntixDigitalAICSService.exe"""; StatusMsg: "Registering Antix Digital AI Captions Subtitles Service as a Windows Service..." 
 
@@ -61,6 +64,9 @@ Filename: "sc.exe"; Parameters: "config ""Antix Digital AI Captions Subtitles Se
 
 ; ✅ Set the Description (same as the name for consistency)
 Filename: "sc.exe"; Parameters: "description ""Antix Digital AI Captions Subtitles Service"" ""Antix Digital AI Captions Subtitles Service"""; Flags: runhidden
+
+
+; ✅ Start the service
 
 ; ✅ Start the service
 

@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Antix Digital AI Captions Subtitles Service
-AppVersion=2.0.3
+AppVersion=2.0.4
 SetupIconFile=AntixDigital.ico
 AppVerName=Antix Digital AI Captions Subtitles Service
 AppPublisher= Antix Digital Inc
@@ -25,6 +25,8 @@ DiskSpanning=yes
 SlicesPerDisk=1
 DiskSliceSize=734003200
 DisableFinishedPage=yes
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 
 
 [Dirs]
@@ -47,6 +49,8 @@ Source: "model_cache\*"; \
 ;Name: "{commondesktop}\Antix Digital AI Captions Subtitles Service"; Filename: "{app}\AntixDigitalAICSService.exe"
 
 [Run]
+Filename: "{app}\set_ffmpeg_env.bat"; Flags: runhidden waituntilterminated
+
 ; existing lines ...
 Filename: "{app}\nssm.exe"; Parameters: "install ""Antix Digital AI Captions Subtitles Service"" ""{app}\AntixDigitalAICSService.exe"""; StatusMsg: "Registering Antix Digital AI Captions Subtitles Service as a Windows Service..." 
 
@@ -62,8 +66,7 @@ Filename: "sc.exe"; Parameters: "config ""Antix Digital AI Captions Subtitles Se
 ; ✅ Set the Description (same as the name for consistency)
 Filename: "sc.exe"; Parameters: "description ""Antix Digital AI Captions Subtitles Service"" ""Antix Digital AI Captions Subtitles Service"""; Flags: runhidden
 ; run as admin, silent
-Filename: "{app}\set_ffmpeg_env.bat"; Flags: runhidden
-; ✅ Start the service
+
 
 [UninstallRun] 
 ; ✅ Stop and delete service on uninstall 
