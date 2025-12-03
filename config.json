@@ -1,0 +1,17 @@
+{
+  "model": "large-v3-turbo",
+  "avg_logprob_threshold": -1.0,
+  "compression_ratio_threshold": 2.4,
+  "no_speech_prob_threshold": 0.6,
+  "temperature": 0.0,
+  "enable_vad": true,
+  "vad_aggressiveness": 2,
+  "vad_voice_ratio_threshold": 0.1,
+  "min_text_length": 5,
+  "wrap_length": 32,
+  "enable_caps": true,
+  "max_caption_lines": 2,
+  "silence_threshold": 1.0,
+  "enable_filtering": false,
+  "pretty_json": true
+}
